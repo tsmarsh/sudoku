@@ -1,10 +1,9 @@
 # sudoko
 
-A Clojure library designed to ... well, that part is up to you.
-
-## Usage
-
-FIXME
+A quick update
+to
+[Swadonette's Sudoku Solver](https://gist.github.com/swannodette/3217582) to
+use the new finite domain namespace.
 
 ## License
 
