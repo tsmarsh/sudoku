@@ -1,4 +1,4 @@
-(ns sudoku
+(ns sudoku.sudoku
   (:require [clojure.core.logic.fd :as fd]
             [clojure.core.logic :as cl]
             [clojure.java.io :as io]
@@ -42,8 +42,10 @@
     (map #(Integer/parseInt %) flat_chars)))
 
 (defn -main []
-  (let [hints (parseHints (io/resource "test.txt"))
-        _ (println hints)
+  (let [hints (parseHints *in*)
         result (time (sudokufd hints))]
-    (doall (map println (partition 9 (first hints))))
+    (println "Hints: \n")
+    (doall (map println (partition 9 hints)))
+
+    (println "Solutions:" (count result) "\n")
     (doall (map println (partition 9 (first result))))))
