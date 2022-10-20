@@ -10,15 +10,15 @@
 (defn init [vars hints]
   (if (seq vars)
     (let [hint (first hints)]
-      (all
+      (cl/all
         (if-not (zero? hint)
           (cl/== (first vars) hint)
-          succeed)
+          cl/succeed)
         (init (next vars) (next hints))))
-    succeed))
+    cl/succeed))
 
 (defn sudokufd [hints]
-  (let [vars (repeatedly 81 lvar) 
+  (let [vars (repeatedly 81 cl/lvar)
         rows (->> vars (partition 9) (map vec) (into []))
         cols (apply map vector rows)
         sqs  (for [x (range 0 9 3)
