@@ -1,6 +1,8 @@
 (ns sudoku
   (:require [clojure.core.logic.fd :as fd]
-            [clojure.core.logic :as cl]))
+            [clojure.core.logic :as cl]
+            [clojure.java.io :as io]
+            [clojure.string :as str]))
 
 (defn get-square [rows x y]
   (for [x (range x (+ x 3))
@@ -32,15 +34,16 @@
       (cl/everyg fd/distinct cols)
       (cl/everyg fd/distinct sqs))))
 
-;; ====
+(defn parseHints [f]
+  (let [strings (slurp f)
+        lines (str/split-lines strings)
+        chrs (map #(str/split % #" ") lines)
+        flat_chars (flatten chrs)]
+    (map #(Integer/parseInt %) flat_chars)))
 
-(time (sudokufd
- [0 0 6 3 1 7 8 0 0
-  3 0 0 0 0 0 0 0 1
-  0 0 7 0 0 0 3 0 0
-  7 0 0 9 0 6 0 0 8
-  0 6 0 0 0 0 0 4 0
-  8 0 0 5 0 4 0 0 7
-  0 0 1 0 0 0 5 0 0
-  4 0 0 0 0 0 0 0 6
-  0 0 8 7 5 1 2 0 0]))
+(defn -main []
+  (let [hints (parseHints (io/resource "test.txt"))
+        _ (println hints)
+        result (time (sudokufd hints))]
+    (doall (map println (partition 9 (first hints))))
+    (doall (map println (partition 9 (first result))))))
