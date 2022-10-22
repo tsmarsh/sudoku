@@ -1,12 +1,14 @@
 (ns sudoku.sudoku
+  (:gen-class)
   (:require [clojure.core.logic.fd :as fd]
             [clojure.core.logic :as cl]
-            [clojure.java.io :as io]
             [clojure.string :as str]))
 
+(def square-size 3)
+
 (defn get-square [rows x y]
-  (for [x (range x (+ x 3))
-        y (range y (+ y 3))]
+  (for [x (range x (+ x square-size))
+        y (range y (+ y square-size))]
     (get-in rows [x y])))
 
 (defn init [vars hints]
@@ -21,14 +23,14 @@
 
 (defn sudokufd [hints]
   (let [vars (repeatedly 81 cl/lvar)
-        rows (->> vars (partition 9) (map vec) (into []))
+        rows (->> vars (partition (* square-size square-size)) (map vec) (into []))
         cols (apply map vector rows)
-        sqs  (for [x (range 0 9 3)
-                   y (range 0 9 3)]
+        sqs  (for [x (range 0 (* square-size square-size) square-size)
+                   y (range 0 (* square-size square-size) square-size)]
                (get-square rows x y))]
     (cl/run 1 [q]
       (cl/== q vars)
-      (cl/everyg #(fd/in % (fd/domain 1 2 3 4 5 6 7 8 9)) vars)
+      (cl/everyg #(fd/in % (apply fd/domain (range 1 (inc (* square-size square-size))))) vars)
       (init vars hints)
       (cl/everyg fd/distinct rows)
       (cl/everyg fd/distinct cols)
@@ -41,11 +43,13 @@
         flat_chars (flatten chrs)]
     (map #(Integer/parseInt %) flat_chars)))
 
-(defn -main []
+(defn -main [& args]
   (let [hints (parseHints *in*)
-        result (time (sudokufd hints))]
+        result (time (sudokufd hints))
+        ]
     (println "Hints: \n")
     (doall (map println (partition 9 hints)))
 
     (println "Solutions:" (count result) "\n")
-    (doall (map println (partition 9 (first result))))))
+    (doall (map println (partition 9 (first result))))
+    ))
